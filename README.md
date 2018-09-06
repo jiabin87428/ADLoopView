@@ -4,6 +4,8 @@
 说明：
 #可以加载网络图片、本地图片，自动判断是否网络图片
 
+#支持自动播放、自定义延时
+
 #通过代理方法获取点击图片序号：
 adLoopView(adLoopView: ADLoopView ,index: NSInteger)
 
