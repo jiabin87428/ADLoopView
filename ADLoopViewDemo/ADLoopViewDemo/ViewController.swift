@@ -24,7 +24,7 @@ class ViewController: UIViewController {
         let loopView = ADLoopView(frame: frame, images: imagesWeb, placeholder: UIImage(named: "ad"))
         loopView.delegate = self
         loopView.pagePosition = .right
-        //        loopView.setPageImge(pageImage: "page", currentPageImage: "currentPage")
+                loopView.setPageImge(pageImage: "page", currentPageImage: "currentPage")
         //        loopView.setPageImge(pageImage: "page", currentPageImage: "currentPage", dotWidth: 50, dotHeight: 6, dotMargin: 10)
         view.addSubview(loopView)
     }

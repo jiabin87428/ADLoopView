@@ -72,7 +72,6 @@ class ADLoopView: UIView {
     
     private var imageList : NSArray?
     private var autoPlay = false
-    private var fromNet = false
     private var delay : TimeInterval = 3
     
     /// 网络图片临时文件夹
