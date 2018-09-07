@@ -22,4 +22,4 @@ setPageImge(pageImage: String, currentPageImage: String, dotWidth: CGFloat = 20.
 #通过设置公有属性修改分页标签的位置（.left .center .right）：
 pagePosition
 
-更多功能完善ing...
+更多功能完善ing
