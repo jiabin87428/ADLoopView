@@ -1,7 +1,14 @@
-# ADLoopView
+项目说明：
+1、ADLoopView：
 自定义图片轮播控件
+2、ADLoopViewDemo
+使用轮播控件Demo
+3、ADLoopInTableView
+轮播控件配合UITableView实现淘宝产品详情的上滑覆盖效果
+4、HeadImageInTableView
+UIImageView配合UITableView实现淘宝产品详情的上滑覆盖效果
 
-说明：
+ADLoopView控件说明：
 #可以加载网络图片、本地图片，自动判断是否网络图片
 
 #支持自动播放、自定义延时
