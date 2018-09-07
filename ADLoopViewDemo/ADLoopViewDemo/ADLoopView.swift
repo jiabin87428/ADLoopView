@@ -28,7 +28,7 @@ class ADLoopView: UIView {
     /// - parameter .left   :居左
     /// - parameter .center :居中
     /// - parameter .right  :居右
-    var pagePosition = PAGECONTROL_POSITION.center{
+    var pagePosition = PAGECONTROL_POSITION.center {
         didSet{
             guard pageControl != nil else {
                 return
@@ -49,7 +49,13 @@ class ADLoopView: UIView {
             }
         }
     }
+    
+    /// ADLoopView代理
     var delegate: ADLoopViewDelegate?
+    /// 当前显示的ImageView
+    var currentShowImgView: UIImageView?
+    /// 下拉的时候图片是否需要变大
+    var makeImageBiggerWhenDropDown = true
     
     // MARK: 私有属性
     private var pageControl : ADPageControl?
@@ -73,6 +79,7 @@ class ADLoopView: UIView {
     private var imageList : NSArray?
     private var autoPlay = false
     private var delay : TimeInterval = 3
+    private var initHeight: CGFloat = 0.0
     
     /// 网络图片临时文件夹
     private var webImgDic : [String : Data] = [:]
@@ -105,6 +112,8 @@ class ADLoopView: UIView {
     
     /// 初始化设置
     private func initSetting() {
+        self.backgroundColor = .white
+        self.initHeight = self.frame.height
         createImage()
         createLoopView()
         createPageControl()
@@ -160,6 +169,7 @@ class ADLoopView: UIView {
         for i in 0..<3 {
             let imgView = UIImageView(frame: CGRect(x: self.bounds.width * CGFloat(i), y: 0, width: self.bounds.width, height: self.bounds.height))
             imgView.isUserInteractionEnabled = true
+            imgView.clipsToBounds = true
             
             let imgTap = UITapGestureRecognizer(target: self, action: #selector(imgViewClick))
             imgView.addGestureRecognizer(imgTap)
@@ -167,7 +177,7 @@ class ADLoopView: UIView {
                 if webImgDic[self.imageList![i] as! String]! == UIImagePNGRepresentation(self.placeholder!) {
                     imgView.contentMode = .center
                 }else {
-                    imgView.contentMode = .scaleAspectFit
+                    imgView.contentMode = .scaleAspectFill
                 }
             }
             imgView.image = UIImage(data: webImgDic[self.imageList![i] as! String]!)
@@ -212,11 +222,13 @@ class ADLoopView: UIView {
                 if webImgDic[self.imageList![i] as! String]! == UIImagePNGRepresentation(self.placeholder!) {
                     imageView.contentMode = .center
                 }else {
-                    imageView.contentMode = .scaleAspectFit
+                    imageView.contentMode = .scaleAspectFill
                 }
             }
             imageView.image = UIImage(data: webImgDic[self.currentImages![i] as! String]!)
         }
+        /// 永远展示当中那张ImageView
+        self.currentShowImgView = loopView!.subviews[1] as? UIImageView
     }
     
     // 点击图片
@@ -249,6 +261,26 @@ extension ADLoopView {
             pageControl?.setValue(UIImage(named: pageImage), forKey: "_pageImage")
             pageControl?.setValue(UIImage(named: currentPageImage), forKey: "_currentPageImage")
         }
+    }
+    
+    /// 根据self的尺寸刷新当前显示imageView的尺寸
+    func refreshImgFrame() {
+        
+        guard self.currentShowImgView != nil else {
+            return
+        }
+        
+        if makeImageBiggerWhenDropDown == true {
+            /// 刷新loopView容器的尺寸
+            self.loopView!.frame = CGRect(x: self.loopView!.frame.origin.x, y: self.loopView!.frame.origin.y, width: self.loopView!.frame.width, height: self.frame.height)
+            /// 刷新currentShowImgView的尺寸
+            self.currentShowImgView!.frame = CGRect(x: self.currentShowImgView!.frame.origin.x + self.frame.origin.x, y: self.currentShowImgView!.frame.origin.y, width: self.frame.width, height: self.frame.height)
+        }else {
+            /// 刷新loopView容器的尺寸
+            self.loopView!.frame = CGRect(x: self.loopView!.frame.origin.x, y: self.frame.height - self.loopView!.frame.height, width: self.loopView!.frame.width, height: self.loopView!.frame.height)
+        }
+        /// 刷新分页控件的尺寸
+        self.pageControl!.frame = CGRect(x: self.pageControl!.frame.origin.x, y: self.bounds.height - self.pageControl!.frame.height, width: self.pageControl!.frame.width, height: self.pageControl!.frame.height)
     }
 }
 
@@ -287,11 +319,6 @@ extension ADLoopView {
 
 // MARK: UIScrollerView代理方法
 extension ADLoopView: UIScrollViewDelegate {
-    /// 滚动动画结束
-    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
-        scrollView.setContentOffset(CGPoint(x: self.frame.width, y: 0), animated: true)
-    }
-    
     // 滚动栏滚动中
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         let x = scrollView.contentOffset.x
@@ -321,7 +348,6 @@ extension ADLoopView: UIScrollViewDelegate {
 class ADPageControl: UIPageControl {
     override func layoutSubviews() {
         super.layoutSubviews()
-//        self.backgroundColor = .orange
         let marginX = margin + dotW
         
         for i in 0..<self.subviews.count {
