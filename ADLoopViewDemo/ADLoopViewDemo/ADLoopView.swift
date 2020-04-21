@@ -164,6 +164,7 @@ class ADLoopView: UIView {
         loopView?.delegate = self
         loopView?.contentSize = CGSize(width: self.bounds.width*3, height: 0)
         loopView?.isPagingEnabled = true
+        loopView?.isScrollEnabled = self.imageList!.count > 1 ? true : false
         self.addSubview(loopView!)
         
         for i in 0..<3 {
@@ -174,13 +175,19 @@ class ADLoopView: UIView {
             let imgTap = UITapGestureRecognizer(target: self, action: #selector(imgViewClick))
             imgView.addGestureRecognizer(imgTap)
             if self.placeholder != nil {
-                if webImgDic[self.imageList![i] as! String]! == UIImagePNGRepresentation(self.placeholder!) {
+                if (i >= self.imageList!.count) {
+                    imgView.contentMode = .scaleAspectFill
+                }else if webImgDic[self.imageList![i] as! String]! == UIImagePNGRepresentation(self.placeholder!) {
                     imgView.contentMode = .center
                 }else {
                     imgView.contentMode = .scaleAspectFill
                 }
             }
-            imgView.image = UIImage(data: webImgDic[self.imageList![i] as! String]!)
+            if (i >= self.imageList!.count) {
+                imgView.image = UIImage(data: webImgDic[self.imageList![i - i] as! String]!)
+            }else {
+                imgView.image = UIImage(data: webImgDic[self.imageList![i] as! String]!)
+            }
             
             loopView?.addSubview(imgView)
         }
@@ -219,7 +226,9 @@ class ADLoopView: UIView {
         for i in 0..<loopView!.subviews.count {
             let imageView = loopView!.subviews[i] as! UIImageView
             if self.placeholder != nil {
-                if webImgDic[self.imageList![i] as! String]! == UIImagePNGRepresentation(self.placeholder!) {
+                if (i >= self.imageList!.count) {
+                    imageView.contentMode = .scaleAspectFill
+                }else if webImgDic[self.imageList![i] as! String]! == UIImagePNGRepresentation(self.placeholder!) {
                     imageView.contentMode = .center
                 }else {
                     imageView.contentMode = .scaleAspectFill
